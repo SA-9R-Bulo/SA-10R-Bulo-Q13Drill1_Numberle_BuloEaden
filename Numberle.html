@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Numberle - Guess the 4-Digit Number</title>
+<style>
+  body {
+    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+    background: linear-gradient(135deg, #4facfe, #00f2fe); /* matching the welcome gradient */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #fff; /* Light color for contrast */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+  }
+
+  #instructions {
+    max-width: 350px;
+    text-align: center;
+    font-size: 1.2em;
+    color: #f0f4f8; /* Light text color */
+    margin-bottom: 25px;
+  }
+
+  #gameContainer {
+    display: grid;
+    grid-template-rows: repeat(6, 65px);
+    gap: 15px;
+    width: max-content;
+    margin-top: 20px;
+  }
+
+  .guess-row {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .cell {
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
+    border: 3px solid #bdc3c7;
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    line-height: 65px;
+    background-color: #ffffff; /* Keep cells white for clarity */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+  }
+
+  #inputSection {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  #guessInput {
+    padding: 14px 20px;
+    font-size: 1.4em;
+    border-radius: 12px;
+    border: 2px solid #2980b9;
+    width: 220px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  #guessInput:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+  }
+
+  button {
+    padding: 14px 24px;
+    font-size: 1.4em;
+    border: none;
+    border-radius: 12px;
+    background-color: #2980b9;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: #3498db;
+    transform: translateY(-2px);
+  }
+
+#restartButton {background-color: red;}
+
+
+  #message {
+    margin-top: 30px;
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Numberle</h1>
+<div id="instructions">
+  Guess the 4-digit number! You have 6 tries. After each guess, the colors will tell you if you're close!
+</div>
+
+<div id="inputSection">
+  <input type="text" id="guessInput" maxlength="4" placeholder="Enter 4 digits" />
+  <button id="submitGuess">Try it!</button>
+</div>
+
+<br>
+<button id="restartButton" class="btn" onclick="location.reload()">Restart</button>
+<div id="gameContainer"></div>
+<div id="message"></div>
+
+<script>
+  const maxAttempts = 6;
+  let attempts = 0;
+  let secretNumber = '';
+
+  const gameContainer = document.getElementById('gameContainer');
+  const messageDiv = document.getElementById('message');
+  const guessInput = document.getElementById('guessInput');
+  const submitBtn = document.getElementById('submitGuess');
+
+  function generateSecret() {
+    let num = '';
+    for (let i = 0; i < 4; i++) {
+      num += Math.floor(Math.random() * 10);
+    }
+    return num;
+  }
+
+  function init() {
+    secretNumber = generateSecret();
+    attempts = 0;
+    messageDiv.textContent = '';
+    guessInput.value = '';
+    gameContainer.innerHTML = '';
+    for (let i = 0; i < maxAttempts; i++) {
+      const row = document.createElement('div');
+      row.className = 'guess-row';
+      for (let j = 0; j < 4; j++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        row.appendChild(cell);
+      }
+      gameContainer.appendChild(row);
+    }
+  }
+
+  function handleGuess() {
+    const guess = guessInput.value.trim();
+    if (guess.length !== 4 || isNaN(guess)) {
+      alert('Please enter exactly 4 digits.');
+      return;
+    }
+
+    if (attempts >= maxAttempts) {
+      alert('No more tries! The number was: ' + secretNumber);
+      return;
+    }
+
+    const row = gameContainer.children[attempts];
+    const guessDigits = guess.split('');
+    const secretDigits = secretNumber.split('');
+    const colors = Array(4).fill('gray');
+
+    const secretDigitCount = {};
+    secretDigits.forEach(d => {
+      secretDigitCount[d] = (secretDigitCount[d] || 0) + 1;
+    });
+
+    // Green check for correct position
+    for (let i = 0; i < 4; i++) {
+      const cell = row.children[i];
+      cell.textContent = guessDigits[i];
+      if (guessDigits[i] === secretDigits[i]) {
+        colors[i] = 'green';
+        secretDigitCount[guessDigits[i]] -= 1;
+      }
+    }
+
+    // Yellow check for correct digit wrong position
+    for (let i = 0; i < 4; i++) {
+      if (colors[i] === 'gray') {
+        const guessDigit = guessDigits[i];
+        if (secretDigitCount[guessDigit]) {
+          colors[i] = 'yellow';
+          secretDigitCount[guessDigit] -= 1;
+        }
+      }
+    }
+
+    // Apply colors
+    for (let i = 0; i < 4; i++) {
+      row.children[i].style.backgroundColor = colors[i];
+      row.children[i].style.borderColor = colors[i];
+    }
+
+    attempts++;
+    if (guess === secretNumber) {
+      messageDiv.textContent = '🎉 You got it! Well done!';
+    } else if (attempts >= maxAttempts) {
+      messageDiv.textContent = 'Game over! The number was: ' + secretNumber;
+    } else {
+      messageDiv.textContent = '';
+    }
+
+    guessInput.value = '';
+  }
+
+  submitBtn.addEventListener('click', handleGuess);
+  guessInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      handleGuess();
+    }
+  });
+
+  init();
+</script>
+
+</body>
+</html>

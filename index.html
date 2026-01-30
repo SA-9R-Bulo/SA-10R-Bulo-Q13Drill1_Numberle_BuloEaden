@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Numberle</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    width: 90%;
+    max-width: 400px;
+  }
+
+  #startScreen {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    padding: 40px;
+    text-align: center;
+    transition: all 0.5s ease;
+  }
+
+  #startScreen {
+    display: block;
+  }
+
+  #gameScreen {
+    display: none;
+  }
+
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  /* Style the link as a button */
+  a.button {
+    display: inline-block;
+    background-color: #4facfe;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+  }
+
+  a.button:hover {
+    background-color: #00f2fe;
+    transform: scale(1.05);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="startScreen">
+    <h1>Welcome to Numberle</h1>
+    <!-- Link to index.html -->
+    <a href="Numberle.html" class="button">Play</a>
+  </div>
+
+
+
+</body>
+</html>
